@@ -1,3 +1,4 @@
+import { request, response } from 'express';
 import { Request, Response } from 'express';
 import Usuario from '../models/usuarioM';
 
@@ -25,7 +26,7 @@ export const getUsuario = async (req: Request, res: Response) => {
     }
 }
 
-export const postUsuario = async (req: Request, res: Response) => {
+export const postUsuario = async (req= request, res= response) => {
 
     const { body } = req;
 

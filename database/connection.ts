@@ -1,7 +1,7 @@
 import { Sequelize } from "sequelize";
 
 
-const db = new Sequelize('esquema', 'postgres', '040104', {
+const db = new Sequelize('GeoApoyo', 'postgres', '040104', {
     host: 'localhost',
     dialect: 'postgres',
     //logging: false
