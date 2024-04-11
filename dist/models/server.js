@@ -19,7 +19,7 @@ const connection_1 = __importDefault(require("../database/connection"));
 class Server {
     constructor() {
         this.apiPaths = {
-            usuarios: '/api/usuarios'
+            usuarios: '/api/GeoA'
         };
         this.app = (0, express_1.default)();
         this.port = process.env.PORT || '8080';

@@ -11,7 +11,7 @@ interface UsuarioAttributes {
     sueldo: string;
     correo: string;
     contrasenia: string;
-    estatus: String;
+    estatus: string;
 }
 
 export interface UsuarioInstance

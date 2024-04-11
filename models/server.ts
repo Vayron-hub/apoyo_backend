@@ -10,7 +10,7 @@ class Server{
     private app:Application;
     private port: String;
     private apiPaths = {
-        usuarios: '/api/usuarios'
+        usuarios: '/api/GeoA'
     }
 
     constructor(){

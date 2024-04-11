@@ -13,7 +13,8 @@ router.post('/login', [
 ], auth_1.login);
 router.get('/', usuarioC_1.getUsuarios);
 router.get('/:id', usuarioC_1.getUsuario);
-router.post('/', [
+//? Agregar Solicitante
+router.post('/solicitante', [
     check('nombre', 'El nombre es obligatorio').not().isEmpty(),
     check('primerApellido', 'El apellido paterno es obligatorio').not().isEmpty(),
     check('segundoApellido', 'El apellido materno es obligatorio').not().isEmpty(),
@@ -23,9 +24,20 @@ router.post('/', [
     check('grado', 'El grado es obligatorio').not().isEmpty(),
     check('tipoApoyo', '}El tipo de apoyo es obligatorio').not().isEmpty(),
     check('estatus', 'El estaus es obligatorio').not().isEmpty(),
-    check('correo', 'El correo es obligatorio').not().isEmpty(),
     check('correo', 'El correo es obligatorio').isEmail(),
-    check('correo').custom(validarCampos_1.emailExiste),
+    validarCampos_1.validarCampos
+], usuarioC_1.postSolicitante);
+//? Agregar USUARIO
+router.post('/usuario', [
+    check('nombre', 'El nombre es obligatorio').not().isEmpty(),
+    check('primerApellido', 'El apellido paterno es obligatorio').not().isEmpty(),
+    check('segundoApellido', 'El apellido materno es obligatorio').not().isEmpty(),
+    check('puesto', 'El genero es obligatoria').not().isEmpty(),
+    check('fechaContratacion', 'La edad es obligatoria').not().isEmpty(),
+    check('sueldo', 'La institución es obligatorio').not().isEmpty(),
+    check('correo', 'El correo es obligatorio').isEmail(),
+    check('contrasenia', 'El grado es obligatorio').not().isEmpty(),
+    check('estatus', 'El estaus es obligatorio').not().isEmpty(),
     validarCampos_1.validarCampos
 ], usuarioC_1.postUsuario);
 router.put('/:id', usuarioC_1.putUsuario);

@@ -1,8 +1,29 @@
-import { DataTypes } from 'sequelize';
+import { Model, DataTypes } from 'sequelize';
 import db from '../database/connection';
 
-const Solicitante = db.define('Usuario', {
+interface SolicitanteAttributes {
+    idSolicitante: Number,
+    nombre: string;
+    primerApellido: string;
+    segundoApellido: string;
+    genero: string;
+    edad: string;
+    institucion: string;
+    grado: string;
+    tipoApoyo: string;
+    estatus: string;
+    correo: string;
+}
 
+export interface SolicitanteInstance
+    extends Model<SolicitanteAttributes>,
+    SolicitanteAttributes { }
+
+const Solicitante = db.define<SolicitanteInstance>('Solicitante', {
+    idSolicitante: {
+        type: DataTypes.NUMBER,
+        primaryKey: true
+    },
     nombre: {
         type: DataTypes.STRING
     },
@@ -18,9 +39,27 @@ const Solicitante = db.define('Usuario', {
     edad: {
         type: DataTypes.STRING
     },
+    institucion: {
+        type: DataTypes.STRING
+    },
+    grado: {
+        type: DataTypes.STRING
+    },
+    tipoApoyo: {
+        type: DataTypes.STRING
+    },
+    estatus: {
+        type: DataTypes.STRING
+    },
     correo: {
         type: DataTypes.STRING
     },
-});
+},
+    {
+        // Opciones del modelo
+        tableName: 'solicitante',
+        timestamps: false,
+        schema: "GeoApoyo"
+    });
 
 export default Solicitante;
