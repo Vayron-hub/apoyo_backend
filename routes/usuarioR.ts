@@ -3,22 +3,30 @@ import { Router } from 'express';
 
 import { login } from '../controllers/auth'
 import { validarCampos, emailExiste } from '../middlewares/validarCampos';
-import { deleteUsuario, getUsuario, getUsuarios, postSolicitante, postUsuario, putUsuario } from '../controllers/usuarioC';
+import {
+    deleteUsuario,
+    getUsuario,
+    getUsuarios,
+    getSolicitante,
+    getSolicitantes,
+    postSolicitante,
+    postUsuario,
+    putUsuario,
+    putSolicitante,
+    deleteSolicitante
+} from '../controllers/usuarioC';
 
 const router = Router();
 
-router.post('/login', [
-    check('correo', 'El correo es obligatorio').isEmail(),
-    check('password', 'La contraseña es obligatoria').not().isEmpty(),
-    validarCampos
-], login);
 
-router.get('/', getUsuarios);
+//* RUTAS DE SOLICITANTE
+//VER SOLICITANTES
+router.get('/solicitantes', getSolicitantes);
 
+//VER A UN SOLICITANTE 
+router.get('/solicitante/:id', getSolicitante);
 
-router.get('/:id', getUsuario);
-
-    //? Agregar Solicitante
+//AGREGAR UN SOLICITANTE
 router.post('/solicitante',
     [
         check('nombre', 'El nombre es obligatorio').not().isEmpty(),
@@ -35,7 +43,28 @@ router.post('/solicitante',
     ],
     postSolicitante);
 
-    //? Agregar USUARIO
+ //ACTUALIZAR SOLICITANTE
+router.put('/AS/:id', putSolicitante);
+// ELIMINAR SOLICITANTE
+router.delete('/BS/:id', deleteSolicitante);
+
+
+//? RUTAS DE USUARIO
+
+//HACER LOGIN CON UN USUARIO
+router.post('/login', [
+    check('correo', 'El correo es obligatorio').isEmail(),
+    check('password', 'La contraseña es obligatoria').not().isEmpty(),
+    validarCampos
+], login);
+
+// VER USUARIOS
+router.get('/usuarios', getUsuarios);
+
+//VER UN SOLO USUARIO
+router.get('/usuario/:id', getUsuario);
+
+//AGREGAR UN USUARIO
 router.post('/usuario',
     [
         check('nombre', 'El nombre es obligatorio').not().isEmpty(),
@@ -51,9 +80,11 @@ router.post('/usuario',
     ],
     postUsuario);
 
-router.put('/:id', putUsuario);
+    //ACTUALIZAR UN USUARIO
+router.put('/AU/:id', putUsuario);
 
-router.delete('/:id', deleteUsuario);
+//ELIMINAR UN USUARIO
+router.delete('/BU/:id', deleteUsuario);
 
 
 

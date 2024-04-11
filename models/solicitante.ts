@@ -22,7 +22,8 @@ export interface SolicitanteInstance
 const Solicitante = db.define<SolicitanteInstance>('Solicitante', {
     idSolicitante: {
         type: DataTypes.NUMBER,
-        primaryKey: true
+        primaryKey: true,
+        autoIncrement: true
     },
     nombre: {
         type: DataTypes.STRING

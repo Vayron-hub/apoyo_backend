@@ -21,7 +21,8 @@ export interface UsuarioInstance
 const Usuario = db.define<UsuarioInstance>('usuario', {
     idUsuario: {
         type: DataTypes.NUMBER,
-        primaryKey: true
+        primaryKey: true,
+        autoIncrement: true
     },
     nombre: {
         type: DataTypes.STRING

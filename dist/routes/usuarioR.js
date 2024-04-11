@@ -6,14 +6,12 @@ const auth_1 = require("../controllers/auth");
 const validarCampos_1 = require("../middlewares/validarCampos");
 const usuarioC_1 = require("../controllers/usuarioC");
 const router = (0, express_1.Router)();
-router.post('/login', [
-    check('correo', 'El correo es obligatorio').isEmail(),
-    check('password', 'La contraseña es obligatoria').not().isEmpty(),
-    validarCampos_1.validarCampos
-], auth_1.login);
-router.get('/', usuarioC_1.getUsuarios);
-router.get('/:id', usuarioC_1.getUsuario);
-//? Agregar Solicitante
+//* RUTAS DE SOLICITANTE
+//VER SOLICITANTES
+router.get('/solicitantes', usuarioC_1.getSolicitantes);
+//VER A UN SOLICITANTE 
+router.get('/solicitante/:id', usuarioC_1.getSolicitante);
+//AGREGAR UN SOLICITANTE
 router.post('/solicitante', [
     check('nombre', 'El nombre es obligatorio').not().isEmpty(),
     check('primerApellido', 'El apellido paterno es obligatorio').not().isEmpty(),
@@ -27,7 +25,22 @@ router.post('/solicitante', [
     check('correo', 'El correo es obligatorio').isEmail(),
     validarCampos_1.validarCampos
 ], usuarioC_1.postSolicitante);
-//? Agregar USUARIO
+//ACTUALIZAR SOLICITANTE
+router.put('/AS/:id', usuarioC_1.putSolicitante);
+// ELIMINAR SOLICITANTE
+router.delete('/BS/:id', usuarioC_1.deleteSolicitante);
+//? RUTAS DE USUARIO
+//HACER LOGIN CON UN USUARIO
+router.post('/login', [
+    check('correo', 'El correo es obligatorio').isEmail(),
+    check('password', 'La contraseña es obligatoria').not().isEmpty(),
+    validarCampos_1.validarCampos
+], auth_1.login);
+// VER USUARIOS
+router.get('/usuarios', usuarioC_1.getUsuarios);
+//VER UN SOLO USUARIO
+router.get('/usuario/:id', usuarioC_1.getUsuario);
+//AGREGAR UN USUARIO
 router.post('/usuario', [
     check('nombre', 'El nombre es obligatorio').not().isEmpty(),
     check('primerApellido', 'El apellido paterno es obligatorio').not().isEmpty(),
@@ -40,7 +53,9 @@ router.post('/usuario', [
     check('estatus', 'El estaus es obligatorio').not().isEmpty(),
     validarCampos_1.validarCampos
 ], usuarioC_1.postUsuario);
-router.put('/:id', usuarioC_1.putUsuario);
-router.delete('/:id', usuarioC_1.deleteUsuario);
+//ACTUALIZAR UN USUARIO
+router.put('/AU/:id', usuarioC_1.putUsuario);
+//ELIMINAR UN USUARIO
+router.delete('/BU/:id', usuarioC_1.deleteUsuario);
 exports.default = router;
 //# sourceMappingURL=usuarioR.js.map
