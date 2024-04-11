@@ -1,14 +1,35 @@
-import { DataTypes } from 'sequelize';
+import { Model, DataTypes } from 'sequelize';
 import db from '../database/connection';
 
-const Usuario = db.define('Usuario', {
+interface UsuarioAttributes {
+    idUsuario: Number,
+    nombre: string;
+    primerApellido: string;
+    segundoApellido: string;
+    puesto: string;
+    fechaContratacion: string;
+    sueldo: string;
+    correo: string;
+    contrasenia: string;
+    estatus: String;
+}
+
+export interface UsuarioInstance
+    extends Model<UsuarioAttributes>,
+    UsuarioAttributes { }
+
+const Usuario = db.define<UsuarioInstance>('usuario', {
+    idUsuario: {
+        type: DataTypes.NUMBER,
+        primaryKey: true
+    },
     nombre: {
         type: DataTypes.STRING
     },
     primerApellido: {
         type: DataTypes.STRING
     },
-    segundoApellido : {
+    segundoApellido: {
         type: DataTypes.STRING
     },
     puesto: {
@@ -26,11 +47,16 @@ const Usuario = db.define('Usuario', {
     contrasenia: {
         type: DataTypes.STRING
     },
-    status: {
+    estatus: {
         type: DataTypes.STRING,
         defaultValue: 'AC'
     },
-} );
-
+},
+    {
+        // Opciones del modelo
+        tableName: 'usuario', // Reemplaza esto con el nombre real de tu tabla
+        timestamps: false,
+        schema: "GeoApoyo"
+    });
 
 export default Usuario;
