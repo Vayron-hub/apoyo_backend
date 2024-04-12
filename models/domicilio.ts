@@ -1,8 +1,29 @@
-import { DataTypes } from 'sequelize';
+import { Model, DataTypes } from 'sequelize';
 import db from '../database/connection';
 
-const Domicilio = db.define('Usuario', {
+interface DomicilioAttributes {
+    idDomicilio: number,
+    calle: string,
+    numeroExterior: string,
+    numeroInterior: string,
+    colonia: string,
+    ciudad: string,
+    estado: string,
+    latitud: string,
+    longitud: string,
+    solicitanteId: number,
+}
 
+export interface DomicilioInstance
+    extends Model<DomicilioAttributes>,
+    DomicilioAttributes { }
+
+const Domicilio = db.define<DomicilioInstance>('Domicilio', {
+    idDomicilio: {
+        type: DataTypes.NUMBER,
+        primaryKey: true,
+        autoIncrement: true
+    },
     calle: {
         type: DataTypes.STRING
     },
@@ -12,7 +33,7 @@ const Domicilio = db.define('Usuario', {
     numeroInterior: {
         type: DataTypes.STRING
     },
-    colonia : {
+    colonia: {
         type: DataTypes.STRING
     },
     ciudad: {
@@ -24,13 +45,18 @@ const Domicilio = db.define('Usuario', {
     latitud: {
         type: DataTypes.STRING
     },
-    
     longitud: {
         type: DataTypes.STRING
     },
-    solicitante_id: {
+    solicitanteId: {
         type: DataTypes.NUMBER
     },
-});
+},
+    {
+        // Opciones del modelo
+        tableName: 'domicilio',
+        timestamps: false,
+        schema: "GeoApoyo"
+    });
 
 export default Domicilio;

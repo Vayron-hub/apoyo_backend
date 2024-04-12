@@ -12,33 +12,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUsuario = exports.putUsuario = exports.getUsuario = exports.getUsuarios = exports.postUsuario = exports.deleteSolicitante = exports.putSolicitante = exports.getSolicitante = exports.getSolicitantes = exports.postSolicitante = void 0;
+exports.deleteUsuario = exports.putUsuario = exports.getUsuario = exports.getUsuarios = exports.postUsuario = exports.postSolicitante = exports.deleteSolicitante = exports.putSolicitante = exports.getSolicitante = exports.getSolicitantes = void 0;
 const express_1 = require("express");
 const bcryptjs = require('bcryptjs');
 const usuarioM_1 = __importDefault(require("../models/usuarioM"));
 const solicitante_1 = __importDefault(require("../models/solicitante"));
+const connection_1 = __importDefault(require("../database/connection"));
 //? POST DE SOLICITANTE
-const postSolicitante = (...args_1) => __awaiter(void 0, [...args_1], void 0, function* (req = express_1.request, res = express_1.response) {
-    const { body } = req;
-    try {
-        const existeEmail = yield solicitante_1.default.findOne({ where: { correo: body.correo } });
-        if (existeEmail) {
-            return res.status(400).json({
-                msg: 'Ya existe un solicitante con el email ' + body.correo
-            });
-        }
-        const solicitante = new solicitante_1.default(body);
-        yield solicitante.save();
-        res.json(solicitante);
-    }
-    catch (error) {
-        console.log(error);
-        res.status(500).json({
-            msg: 'Hable con el administrador'
-        });
-    }
-});
-exports.postSolicitante = postSolicitante;
+// export const postSolicitante = async (req= request, res= response) => {
+//     const { body } = req;
+//     try {
+//         const existeEmail = await Solicitante.findOne({where:{correo: body.correo}});
+//         if (existeEmail) {
+//             return res.status(400).json({
+//                 msg: 'Ya existe un solicitante con el email ' + body.correo
+//             });
+//         }
+//         const solicitante = new Solicitante(body);
+//         await solicitante.save();
+//         res.json(solicitante);
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).json({
+//             msg: 'Hable con el administrador'
+//         });
+//     }
+// }
 const getSolicitantes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const solicitantes = yield solicitante_1.default.findAll();
     res.json({ solicitantes });
@@ -62,7 +61,7 @@ const putSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, function*
     const { body } = req;
     try {
         const solicitante = yield solicitante_1.default.findByPk(id);
-        if (!solicitante) {
+        if (!solicitante || solicitante.estatus == 'IA') {
             return res.status(404).json({
                 msg: 'No existe un solicitante con el id ' + id
             });
@@ -81,7 +80,7 @@ exports.putSolicitante = putSolicitante;
 const deleteSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const solicitante = yield solicitante_1.default.findByPk(id);
-    if (!solicitante) {
+    if (!solicitante || solicitante.estatus == 'IA') {
         return res.status(404).json({
             msg: 'No existe un solicitante con el id ' + id
         });
@@ -92,8 +91,38 @@ const deleteSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, functi
     });
 });
 exports.deleteSolicitante = deleteSolicitante;
+const postSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //Se accede a los valores del request
+    const { solicitante, domicilio, formulario } = req.body;
+    try {
+        //Se inicia una transaccion
+        const resultados = yield connection_1.default.transaction((t) => __awaiter(void 0, void 0, void 0, function* () {
+            //Se guarda en base de datos el solicitante
+            const createSolicitante = yield solicitante_1.default.create(solicitante, { transaction: t });
+            //Se guarda en base de datos el domicilio con la llave foranea de solicitante
+            const createDomicilio = yield domicilio.create(Object.assign(Object.assign({}, domicilio), { solicitante_idSolicitante: createSolicitante.idSolicitante }), { transaction: t });
+            //Se guarda en base de datos el formulario con la llave foranea del solicitante
+            const createFormulario = yield formulario.create(Object.assign(Object.assign({}, formulario), { solicitante_idSolicitante: createSolicitante.idSolicitante }), { transaction: t });
+            //Se retornan los valores
+            return {
+                createSolicitante,
+                createDomicilio,
+                createFormulario
+            };
+        }));
+        res.send({
+            resultados
+        });
+    }
+    catch (e) {
+        res.status(500).send({
+            msg: e
+        });
+    }
+});
+exports.postSolicitante = postSolicitante;
 //* CONTROL DE USUARIOS
-const postUsuario = (...args_2) => __awaiter(void 0, [...args_2], void 0, function* (req = express_1.request, res = express_1.response) {
+const postUsuario = (...args_1) => __awaiter(void 0, [...args_1], void 0, function* (req = express_1.request, res = express_1.response) {
     const { body } = req;
     try {
         const existeEmail = yield usuarioM_1.default.findOne({ where: { correo: body.correo } });
@@ -140,7 +169,7 @@ const putUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const { body } = req;
     try {
         const usuario = yield usuarioM_1.default.findByPk(id);
-        if (!usuario) {
+        if (!usuario || usuario.estatus == 'IA') {
             return res.status(404).json({
                 msg: 'No existe un usuario con el id ' + id
             });
@@ -159,7 +188,7 @@ exports.putUsuario = putUsuario;
 const deleteUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const usuario = yield usuarioM_1.default.findByPk(id);
-    if (!usuario) {
+    if (!usuario || usuario.estatus == 'IA') {
         return res.status(404).json({
             msg: 'No existe un usuario con el id ' + id
         });

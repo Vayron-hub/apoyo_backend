@@ -44,7 +44,7 @@ router.post('/solicitante',
     postSolicitante);
 
  //ACTUALIZAR SOLICITANTE
-router.put('/AS/:id', putSolicitante);
+router.put('/AS/:id',putSolicitante);
 // ELIMINAR SOLICITANTE
 router.delete('/BS/:id', deleteSolicitante);
 
