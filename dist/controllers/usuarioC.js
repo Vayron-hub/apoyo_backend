@@ -17,6 +17,8 @@ const express_1 = require("express");
 const bcryptjs = require('bcryptjs');
 const usuarioM_1 = __importDefault(require("../models/usuarioM"));
 const solicitante_1 = __importDefault(require("../models/solicitante"));
+const domicilio_1 = __importDefault(require("../models/domicilio"));
+const formulario_1 = __importDefault(require("../models/formulario"));
 const connection_1 = __importDefault(require("../database/connection"));
 //? POST DE SOLICITANTE
 // export const postSolicitante = async (req= request, res= response) => {
@@ -100,9 +102,9 @@ const postSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, function
             //Se guarda en base de datos el solicitante
             const createSolicitante = yield solicitante_1.default.create(solicitante, { transaction: t });
             //Se guarda en base de datos el domicilio con la llave foranea de solicitante
-            const createDomicilio = yield domicilio.create(Object.assign(Object.assign({}, domicilio), { solicitante_idSolicitante: createSolicitante.idSolicitante }), { transaction: t });
+            const createDomicilio = yield domicilio_1.default.create(Object.assign(Object.assign({}, domicilio), { solicitante_idSolicitante: createSolicitante.idSolicitante }), { transaction: t });
             //Se guarda en base de datos el formulario con la llave foranea del solicitante
-            const createFormulario = yield formulario.create(Object.assign(Object.assign({}, formulario), { solicitante_idSolicitante: createSolicitante.idSolicitante }), { transaction: t });
+            const createFormulario = yield formulario_1.default.create(Object.assign(Object.assign({}, formulario), { solicitante_idSolicitante: createSolicitante.idSolicitante }), { transaction: t });
             //Se retornan los valores
             return {
                 createSolicitante,
@@ -114,9 +116,10 @@ const postSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, function
             resultados
         });
     }
-    catch (e) {
+    catch (error) {
+        console.log(error);
         res.status(500).send({
-            msg: e
+            msg: error,
         });
     }
 });

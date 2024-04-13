@@ -3,6 +3,8 @@ import { Request, Response } from 'express';
 const  bcryptjs = require ('bcryptjs');
 import Usuario from '../models/usuarioM';
 import Solicitante from '../models/solicitante';
+import Domicilio from '../models/domicilio';
+import Formulario from '../models/formulario';
 import db from '../database/connection';
 
 
@@ -123,13 +125,13 @@ export const postSolicitante = async(req: Request, res: Response) => {
             const createSolicitante = await Solicitante.create(solicitante, {transaction: t});
 
             //Se guarda en base de datos el domicilio con la llave foranea de solicitante
-            const createDomicilio = await domicilio.create({
+            const createDomicilio = await Domicilio.create({
                 ...domicilio,
                 solicitante_idSolicitante: createSolicitante.idSolicitante
             }, {transaction: t});
 
             //Se guarda en base de datos el formulario con la llave foranea del solicitante
-            const createFormulario = await formulario.create({
+            const createFormulario = await Formulario.create({
                 ...formulario,
                 solicitante_idSolicitante: createSolicitante.idSolicitante
             }, {transaction: t});
@@ -148,9 +150,10 @@ export const postSolicitante = async(req: Request, res: Response) => {
             resultados
         })
 
-    }catch(e){
+    }catch(error){
+        console.log(error);
         res.status(500).send({
-            msg: e
+            msg: error,
         })
     }
 

@@ -11,7 +11,7 @@ interface DomicilioAttributes {
     estado: string,
     latitud: string,
     longitud: string,
-    solicitanteId: number,
+    solicitante_idSolicitante: number,
 }
 
 export interface DomicilioInstance
@@ -48,7 +48,7 @@ const Domicilio = db.define<DomicilioInstance>('Domicilio', {
     longitud: {
         type: DataTypes.STRING
     },
-    solicitanteId: {
+    solicitante_idSolicitante: {
         type: DataTypes.NUMBER
     },
 },

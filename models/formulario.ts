@@ -1,8 +1,8 @@
 import { Model, DataTypes } from 'sequelize';
 import db from '../database/connection';
 
-interface EncuestaAttributes {
-    idEncuesta: number,
+interface FormularioAttributes {
+    idFormulario: number,
     pregunta1: string,
     pregunta2: string,
     pregunta3: string,
@@ -20,15 +20,15 @@ interface EncuestaAttributes {
     pregunta15: string,
     pregunta16: string,
     pregunta17: string,
-    solicitanteId: number,
+    solicitante_idSolicitante: number,
 }
 
-export interface EncuestaInstance
-    extends Model<EncuestaAttributes>,
-    EncuestaAttributes { }
+export interface FormularioInstance
+    extends Model<FormularioAttributes>,
+    FormularioAttributes { }
 
-const Encuesta = db.define<EncuestaInstance>('Encuesta', {
-    idEncuesta: {
+const Formulario = db.define<FormularioInstance>('Formulario', {
+    idFormulario: {
         type: DataTypes.NUMBER,
         primaryKey: true,
         autoIncrement: true
@@ -84,15 +84,15 @@ const Encuesta = db.define<EncuestaInstance>('Encuesta', {
     pregunta17: {
         type: DataTypes.STRING
     },
-    solicitanteId: {
+    solicitante_idSolicitante: {
         type: DataTypes.NUMBER
     },
 },
     {
         // Opciones del modelo
-        tableName: 'encuesta',
+        tableName: 'formulario',
         timestamps: false,
         schema: "GeoApoyo"
     });
 
-export default Encuesta;
+export default Formulario;
