@@ -16,8 +16,9 @@ import seleccionarVisitadorDisponible from '../controllers/solicitanteController
 export const getSolicitantes = async (req: Request, res: Response) => {
 
     const solicitantes = await Solicitante.findAll();
+    
 
-    res.json({ solicitantes });
+    res.json({ solicitantes});
 
 }
 
@@ -28,8 +29,10 @@ export const getSolicitante = async (req: Request, res: Response) => {
 
     const solicitante = await Solicitante.findByPk(id);
 
+    const domicilioS = await Domicilio.findOne({ where: { solicitante_idSolicitante: id } });
+
     if (solicitante) {
-        res.json(solicitante);
+        res.json({solicitante, domicilioS});
     } else {
         res.status(404).json({
             msg: `No existe un solicitante con el id ${id}`
@@ -37,34 +40,6 @@ export const getSolicitante = async (req: Request, res: Response) => {
     }
 }
 
-// export const postSolicitante = async (req= request, res= response) => {
-
-//     const { body } = req;
-
-//     try {
-
-//         const existeEmail = await Solicitante.findOne({where:{correo: body.correo}});
-
-//         if (existeEmail) {
-//             return res.status(400).json({
-//                 msg: 'Ya existe un solicitante con el email ' + body.correo
-//             });
-//         }
-
-//         const solicitante = new Solicitante(body);
-//         await solicitante.save();
-
-//         res.json(solicitante);
-
-
-
-//     } catch (error) {
-//         console.log(error);
-//         res.status(500).json({
-//             msg: 'Hable con el administrador'
-//         });
-//     }
-// }
 
 export const putSolicitante = async (req: Request, res: Response) => {
 
@@ -196,7 +171,7 @@ export const postUsuario = async (req = request, res = response) => {
         }
 
         const { contrasenia } = req.body;
-        const usuario = new Usuario();
+        const usuario = new Usuario(body);
 
         const salt = bcryptjs.genSaltSync();
         usuario.contrasenia = bcryptjs.hashSync(contrasenia, salt);

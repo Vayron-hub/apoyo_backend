@@ -4,7 +4,7 @@ const bcryptjs = require('bcryptjs')
 import Usuario, { UsuarioInstance } from "../models/usuarioM";
 
 const { generarJWT } = require('../helpers/generar-jwt');
-const { googleVerify } = require('../helpers/google-verify');
+
 
 
 export const login = async (req= request, res= response) => {

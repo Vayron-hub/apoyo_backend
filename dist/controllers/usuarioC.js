@@ -20,36 +20,21 @@ const solicitante_1 = __importDefault(require("../models/solicitante"));
 const domicilio_1 = __importDefault(require("../models/domicilio"));
 const formulario_1 = __importDefault(require("../models/formulario"));
 const connection_1 = __importDefault(require("../database/connection"));
+const solicitanteController_1 = __importDefault(require("../controllers/solicitanteController"));
 //? POST DE SOLICITANTE
-// export const postSolicitante = async (req= request, res= response) => {
-//     const { body } = req;
-//     try {
-//         const existeEmail = await Solicitante.findOne({where:{correo: body.correo}});
-//         if (existeEmail) {
-//             return res.status(400).json({
-//                 msg: 'Ya existe un solicitante con el email ' + body.correo
-//             });
-//         }
-//         const solicitante = new Solicitante(body);
-//         await solicitante.save();
-//         res.json(solicitante);
-//     } catch (error) {
-//         console.log(error);
-//         res.status(500).json({
-//             msg: 'Hable con el administrador'
-//         });
-//     }
-// }
+//TRAER SOLICITANTES
 const getSolicitantes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const solicitantes = yield solicitante_1.default.findAll();
     res.json({ solicitantes });
 });
 exports.getSolicitantes = getSolicitantes;
+//TRAER UN SOLICITANTE MEDIANTE UN ID
 const getSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const solicitante = yield solicitante_1.default.findByPk(id);
+    const domicilioS = yield domicilio_1.default.findOne({ where: { solicitante_idSolicitante: id } });
     if (solicitante) {
-        res.json(solicitante);
+        res.json({ solicitante, domicilioS });
     }
     else {
         res.status(404).json({
@@ -60,7 +45,9 @@ const getSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, function*
 exports.getSolicitante = getSolicitante;
 const putSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const { body } = req;
+    const { upsolicitante, updomicilio } = req.body;
+    console.log(updomicilio);
+    console.log(upsolicitante);
     try {
         const solicitante = yield solicitante_1.default.findByPk(id);
         if (!solicitante || solicitante.estatus == 'IA') {
@@ -68,8 +55,18 @@ const putSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 msg: 'No existe un solicitante con el id ' + id
             });
         }
-        yield solicitante.update(body);
-        res.json(solicitante);
+        yield solicitante.update(upsolicitante);
+        const domicilio = yield domicilio_1.default.findOne({ where: { solicitante_idSolicitante: id } });
+        if (!domicilio || domicilio.solicitante_idSolicitante == null) {
+            return res.status(404).json({
+                msg: 'No existe un solicitante con el id ' + id
+            });
+        }
+        yield domicilio.update(updomicilio);
+        res.json({
+            solicitante,
+            domicilio
+        });
     }
     catch (error) {
         console.log(error);
@@ -115,6 +112,7 @@ const postSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, function
         res.send({
             resultados
         });
+        new solicitanteController_1.default();
     }
     catch (error) {
         console.log(error);
