@@ -1,7 +1,34 @@
-import { DataTypes } from 'sequelize';
+import { Model, DataTypes } from 'sequelize';
 import db from '../database/connection';
+import Solicitante, { SolicitanteInstance } from './solicitante';
+import Domicilio from './domicilio';
+import Usuario from './usuarioM';
 
-const Visita = db.define('Visita', {
+interface VisitaAttributes {
+    idVisita: number;
+    confirmacionSolicitante: boolean;
+    estatus: string;
+    razon: string;
+    latitudVisita: string;
+    longitudVisita: string;
+    fecha: Date;
+    hora: string;
+    fotoDomicilio: string;
+    fotoIdentificacion: string;
+    SolicitanteId: number;
+    usuarioId: number;
+}
+
+export interface VisitaInstance
+    extends Model<VisitaAttributes>,
+    VisitaAttributes { }
+
+const Visita = db.define<VisitaInstance>('Visita', {
+    idVisita: {
+        type: DataTypes.NUMBER,
+        primaryKey: true,
+        autoIncrement: true
+    },
     confirmacionSolicitante: {
         type: DataTypes.BOOLEAN
     },
@@ -29,17 +56,20 @@ const Visita = db.define('Visita', {
     fotoIdentificacion: {
         type: DataTypes.STRING
     },
-    SolicitanteId: { // Cambiado a notación camelCase
-        type: DataTypes.NUMBER // Cambiado a DataTypes.NUMBER
+    SolicitanteId: {
+        type: DataTypes.NUMBER
     },
-    usuarioId: { // Cambiado a notación camelCase
-        type: DataTypes.NUMBER // Cambiado a DataTypes.NUMBER
+    usuarioId: {
+        type: DataTypes.NUMBER
     },
 }, {
-    // Opciones del modelo
-    tableName: 'visita', // Cambiado a 'visita'
-    timestamps: false, // Cambiado a false
+    tableName: 'visita',
+    timestamps: false,
     schema: "GeoApoyo"
 });
+
+Visita.belongsTo(Solicitante, { foreignKey: 'solicitante_idSolicitante' });
+Visita.belongsTo(Domicilio, { foreignKey: 'domicilio_idDomicilio' });
+Visita.belongsTo(Usuario, { foreignKey: 'usuario_idUsuario' });
 
 export default Visita;
