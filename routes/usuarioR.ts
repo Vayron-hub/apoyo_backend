@@ -13,7 +13,9 @@ import {
     postUsuario,
     putUsuario,
     putSolicitante,
-    deleteSolicitante
+    deleteSolicitante,
+    aprobarApoyo,
+    rechazarApoyo
 } from '../controllers/usuarioC';
 
 const router = Router();
@@ -25,6 +27,12 @@ router.get('/solicitantes', getSolicitantes);
 
 //VER A UN SOLICITANTE 
 router.get('/solicitante/:id', getSolicitante);
+
+//APROBAR APOYO
+router.put('/aprobar/:id', aprobarApoyo);
+
+//RECHAZAR APOYO
+router.put('/rechazar/:id', rechazarApoyo);
 
 //AGREGAR UN SOLICITANTE
 router.post('/solicitante',

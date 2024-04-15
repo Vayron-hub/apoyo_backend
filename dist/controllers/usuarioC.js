@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUsuario = exports.putUsuario = exports.getUsuario = exports.getUsuarios = exports.postUsuario = exports.postSolicitante = exports.deleteSolicitante = exports.putSolicitante = exports.getSolicitante = exports.getSolicitantes = void 0;
+exports.deleteUsuario = exports.putUsuario = exports.getUsuario = exports.getUsuarios = exports.postUsuario = exports.rechazarApoyo = exports.aprobarApoyo = exports.postSolicitante = exports.deleteSolicitante = exports.putSolicitante = exports.getSolicitante = exports.getSolicitantes = void 0;
 const express_1 = require("express");
 const bcryptjs = require('bcryptjs');
 const usuarioM_1 = __importDefault(require("../models/usuarioM"));
@@ -46,8 +46,6 @@ exports.getSolicitante = getSolicitante;
 const putSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const { upsolicitante, updomicilio } = req.body;
-    console.log(updomicilio);
-    console.log(upsolicitante);
     try {
         const solicitante = yield solicitante_1.default.findByPk(id);
         if (!solicitante || solicitante.estatus == 'IA') {
@@ -122,6 +120,33 @@ const postSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.postSolicitante = postSolicitante;
+const aprobarApoyo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const { monto } = req.body;
+    const solicitante = yield solicitante_1.default.findByPk(id);
+    if (!solicitante) {
+        return res.status(404).json({
+            msg: `El solicitante con el id: ${id} no existe`
+        });
+    }
+    yield solicitante.update({ estatus: 'Aprobado' });
+    yield solicitante.update({ tipoApoyo: monto });
+    res.json(solicitante);
+});
+exports.aprobarApoyo = aprobarApoyo;
+const rechazarApoyo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const solicitante = yield solicitante_1.default.findByPk(id);
+    if (!solicitante || solicitante.estatus == 'inactivo') {
+        return res.status(404).json({
+            msg: `El solicitante con el id: ${id} no existe`
+        });
+    }
+    yield solicitante.update({ estatus: 'Rechazado' });
+    yield solicitante.update({ tipoApoyo: '0' });
+    res.json(solicitante);
+});
+exports.rechazarApoyo = rechazarApoyo;
 //* CONTROL DE USUARIOS
 const postUsuario = (...args_1) => __awaiter(void 0, [...args_1], void 0, function* (req = express_1.request, res = express_1.response) {
     const { body } = req;

@@ -17,7 +17,6 @@ export const getSolicitantes = async (req: Request, res: Response) => {
 
     const solicitantes = await Solicitante.findAll();
     
-
     res.json({ solicitantes});
 
 }
@@ -45,9 +44,6 @@ export const putSolicitante = async (req: Request, res: Response) => {
 
     const { id } = req.params;
     const { upsolicitante, updomicilio } = req.body;
-
-    console.log(updomicilio);
-    console.log(upsolicitante);
 
     try {
         const solicitante = await Solicitante.findByPk(id);
@@ -90,6 +86,7 @@ export const deleteSolicitante = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     const solicitante = await Solicitante.findByPk(id);
+
     if (!solicitante || solicitante.estatus == 'IA') {
         return res.status(404).json({
             msg: 'No existe un solicitante con el id ' + id
@@ -151,6 +148,46 @@ export const postSolicitante = async (req: Request, res: Response) => {
         })
     }
 
+}
+
+export const aprobarApoyo = async( req: Request, res: Response ) => {
+
+    const { id } = req.params;
+
+    const { monto } = req.body;
+
+    const solicitante = await Solicitante.findByPk( id );
+
+    if( !solicitante){
+        return res.status(404).json({
+            msg: `El solicitante con el id: ${ id } no existe`
+        })
+    }
+
+    await solicitante.update({ estatus: 'Aprobado' });
+
+    await solicitante.update({ tipoApoyo: monto });
+
+    res.json(solicitante);
+}
+
+export const rechazarApoyo = async( req: Request, res: Response ) => {
+
+    const { id } = req.params;
+
+    const solicitante = await Solicitante.findByPk( id );
+
+    if( !solicitante || solicitante.estatus == 'inactivo'){
+        return res.status(404).json({
+            msg: `El solicitante con el id: ${ id } no existe`
+        })
+    }
+
+    await solicitante.update({ estatus: 'Rechazado' });
+
+    await solicitante.update({ tipoApoyo: '0' });
+
+    res.json(solicitante);
 }
 
 

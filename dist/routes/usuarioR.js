@@ -11,6 +11,10 @@ const router = (0, express_1.Router)();
 router.get('/solicitantes', usuarioC_1.getSolicitantes);
 //VER A UN SOLICITANTE 
 router.get('/solicitante/:id', usuarioC_1.getSolicitante);
+//APROBAR APOYO
+router.put('/aprobar/:id', usuarioC_1.aprobarApoyo);
+//RECHAZAR APOYO
+router.put('/rechazar/:id', usuarioC_1.rechazarApoyo);
 //AGREGAR UN SOLICITANTE
 router.post('/solicitante', usuarioC_1.postSolicitante);
 //ACTUALIZAR SOLICITANTE
