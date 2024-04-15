@@ -8,7 +8,7 @@ const connection_1 = __importDefault(require("../database/connection"));
 const solicitante_1 = __importDefault(require("./solicitante"));
 const domicilio_1 = __importDefault(require("./domicilio"));
 const usuarioM_1 = __importDefault(require("./usuarioM"));
-const Visita = connection_1.default.define('Visita', {
+const Visita = connection_1.default.define('visita', {
     idVisita: {
         type: sequelize_1.DataTypes.NUMBER,
         primaryKey: true,
@@ -20,7 +20,7 @@ const Visita = connection_1.default.define('Visita', {
     estatus: {
         type: sequelize_1.DataTypes.STRING
     },
-    razon: {
+    Razon: {
         type: sequelize_1.DataTypes.STRING
     },
     latitudVisita: {
@@ -38,13 +38,16 @@ const Visita = connection_1.default.define('Visita', {
     fotoDomicilio: {
         type: sequelize_1.DataTypes.STRING
     },
-    fotoIdentificacion: {
+    FotoIdentidicacion: {
         type: sequelize_1.DataTypes.STRING
     },
-    SolicitanteId: {
+    solicitante_idSolicitante: {
         type: sequelize_1.DataTypes.NUMBER
     },
-    usuarioId: {
+    domicilio_idDomicilio: {
+        type: sequelize_1.DataTypes.NUMBER
+    },
+    usuario_idUsuario: {
         type: sequelize_1.DataTypes.NUMBER
     },
 }, {

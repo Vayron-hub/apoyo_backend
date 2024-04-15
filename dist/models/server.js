@@ -14,12 +14,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const usuarioR_1 = __importDefault(require("../routes/usuarioR"));
+const visita_1 = __importDefault(require("../routes/visita"));
 const cors_1 = __importDefault(require("cors"));
 const connection_1 = __importDefault(require("../database/connection"));
 class Server {
     constructor() {
         this.apiPaths = {
-            usuarios: '/api/GeoA'
+            usuarios: '/api/GeoA',
+            visita: '/api/visita'
         };
         this.app = (0, express_1.default)();
         this.port = process.env.PORT || '8080';
@@ -52,6 +54,7 @@ class Server {
     }
     routes() {
         this.app.use(this.apiPaths.usuarios, usuarioR_1.default);
+        this.app.use(this.apiPaths.visita, visita_1.default);
     }
     listen() {
         this.app.listen(this.port, () => {

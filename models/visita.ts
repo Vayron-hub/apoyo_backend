@@ -8,22 +8,23 @@ interface VisitaAttributes {
     idVisita: number;
     confirmacionSolicitante: boolean;
     estatus: string;
-    razon: string;
+    Razon: string;
     latitudVisita: string;
     longitudVisita: string;
     fecha: Date;
     hora: string;
     fotoDomicilio: string;
-    fotoIdentificacion: string;
-    SolicitanteId: number;
-    usuarioId: number;
+    FotoIdentidicacion: string;
+    solicitante_idSolicitante: number;
+    domicilio_idDomicilio: number;
+    usuario_idUsuario: number;
 }
 
 export interface VisitaInstance
     extends Model<VisitaAttributes>,
     VisitaAttributes { }
 
-const Visita = db.define<VisitaInstance>('Visita', {
+const Visita = db.define<VisitaInstance>('visita', {
     idVisita: {
         type: DataTypes.NUMBER,
         primaryKey: true,
@@ -35,7 +36,7 @@ const Visita = db.define<VisitaInstance>('Visita', {
     estatus: {
         type: DataTypes.STRING
     },
-    razon: {
+    Razon: {
         type: DataTypes.STRING
     },
     latitudVisita: {
@@ -53,13 +54,16 @@ const Visita = db.define<VisitaInstance>('Visita', {
     fotoDomicilio: {
         type: DataTypes.STRING
     },
-    fotoIdentificacion: {
+    FotoIdentidicacion: {
         type: DataTypes.STRING
     },
-    SolicitanteId: {
+    solicitante_idSolicitante: {
         type: DataTypes.NUMBER
     },
-    usuarioId: {
+    domicilio_idDomicilio: {
+        type: DataTypes.NUMBER
+    },
+    usuario_idUsuario: {
         type: DataTypes.NUMBER
     },
 }, {
