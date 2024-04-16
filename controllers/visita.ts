@@ -1,10 +1,12 @@
 // src/controllers/VisitaController.ts
 import { Request, Response } from 'express';
 import Visita from '../models/visita';
+import path from 'path';
+import fs from 'fs';
 import Solicitante from '../models/solicitante';
 import Domicilio from '../models/domicilio';
 
-export const visitasPendientes = async (req: Request, res: Response) => {
+export const getVisitasPendientes = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const visitas = await Visita.findAll({
@@ -74,13 +76,44 @@ export const confirmarVisita = async (req: Request, res: Response) => {
 };
 
 
-export const fotoSolicitante = async (req: Request, res: Response) => {
+export const fotoSolicitante = async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+
   try {
-    const { id } = req.params;
-    res.json({ message: 'Foto del solicitante correctamente' });
+    const solicitante = await Solicitante.findByPk(id);
+    if (!solicitante) {
+      res.status(404).send('Solicitante no encontrado');
+      return;
+    }
+
+    // Get the photo filename from the solicitante
+    let photoFilename: string | undefined;
+    if (solicitante.foto instanceof Uint8Array) {
+      const buffer = Buffer.from(solicitante.foto); // Convertir Uint8Array a Buffer
+      photoFilename = buffer.toString(); // Convertir Buffer a string
+    } else {
+      photoFilename = solicitante.foto as string; // Tratar 'foto' como string si no es Uint8Array
+    }
+
+    if (!photoFilename) {
+      res.status(404).send('Foto de solicitante no encontrada');
+      return;
+    }
+
+    // Construct the photo path
+    const photoPath = path.join(__dirname, '..', 'solicitante-photos', photoFilename);
+
+    // Check if the photo file exists
+    if (!fs.existsSync(photoPath)) {
+      res.status(404).send('Foto de solicitante no encontrada');
+      return;
+    }
+
+    // Send the photo file as a response
+    res.sendFile(photoPath);
   } catch (error) {
     console.error('Error al obtener la foto del solicitante:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    res.status(500).send('Error interno del servidor');
   }
 };
 

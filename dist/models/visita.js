@@ -8,19 +8,14 @@ const connection_1 = __importDefault(require("../database/connection"));
 const solicitante_1 = __importDefault(require("./solicitante"));
 const domicilio_1 = __importDefault(require("./domicilio"));
 const usuarioM_1 = __importDefault(require("./usuarioM"));
-const Visita = connection_1.default.define('visita', {
-    idVisita: {
-        type: sequelize_1.DataTypes.NUMBER,
-        primaryKey: true,
-        autoIncrement: true
-    },
+const Visita = connection_1.default.define('Usuario', {
     confirmacionSolicitante: {
         type: sequelize_1.DataTypes.BOOLEAN
     },
     estatus: {
         type: sequelize_1.DataTypes.STRING
     },
-    Razon: {
+    razon: {
         type: sequelize_1.DataTypes.STRING
     },
     latitudVisita: {
@@ -38,25 +33,23 @@ const Visita = connection_1.default.define('visita', {
     fotoDomicilio: {
         type: sequelize_1.DataTypes.STRING
     },
-    FotoIdentidicacion: {
+    FotoIdentificacion: {
         type: sequelize_1.DataTypes.STRING
     },
     solicitante_idSolicitante: {
-        type: sequelize_1.DataTypes.NUMBER
-    },
-    domicilio_idDomicilio: {
         type: sequelize_1.DataTypes.NUMBER
     },
     usuario_idUsuario: {
         type: sequelize_1.DataTypes.NUMBER
     },
 }, {
+    // Opciones del modelo
     tableName: 'visita',
     timestamps: false,
     schema: "GeoApoyo"
 });
 Visita.belongsTo(solicitante_1.default, { foreignKey: 'solicitante_idSolicitante' });
-Visita.belongsTo(domicilio_1.default, { foreignKey: 'domicilio_idDomicilio' });
+Visita.belongsTo(domicilio_1.default, { foreignKey: 'idDomicilio' });
 Visita.belongsTo(usuarioM_1.default, { foreignKey: 'usuario_idUsuario' });
 exports.default = Visita;
 //# sourceMappingURL=visita.js.map

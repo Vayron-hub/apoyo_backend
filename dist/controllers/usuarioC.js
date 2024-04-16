@@ -14,13 +14,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteUsuario = exports.putUsuario = exports.getUsuario = exports.getUsuarios = exports.postUsuario = exports.rechazarApoyo = exports.aprobarApoyo = exports.postSolicitante = exports.deleteSolicitante = exports.putSolicitante = exports.getSolicitante = exports.getSolicitantes = void 0;
 const express_1 = require("express");
-const bcryptjs = require('bcryptjs');
-const usuarioM_1 = __importDefault(require("../models/usuarioM"));
+const bcryptjs_1 = __importDefault(require("bcryptjs")); // Importa bcryptjs como módulo ES6
+// import Usuario from '../models/usuarioM';
 const solicitante_1 = __importDefault(require("../models/solicitante"));
 const domicilio_1 = __importDefault(require("../models/domicilio"));
 const formulario_1 = __importDefault(require("../models/formulario"));
 const connection_1 = __importDefault(require("../database/connection"));
 const solicitanteController_1 = __importDefault(require("../controllers/solicitanteController"));
+const asociaciones_1 = require("../models/asociaciones"); // Importa las asociaciones
 //? POST DE SOLICITANTE
 //TRAER SOLICITANTES
 const getSolicitantes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -46,6 +47,8 @@ exports.getSolicitante = getSolicitante;
 const putSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const { upsolicitante, updomicilio } = req.body;
+    console.log(updomicilio);
+    console.log(upsolicitante);
     try {
         const solicitante = yield solicitante_1.default.findByPk(id);
         if (!solicitante || solicitante.estatus == 'IA') {
@@ -151,16 +154,16 @@ exports.rechazarApoyo = rechazarApoyo;
 const postUsuario = (...args_1) => __awaiter(void 0, [...args_1], void 0, function* (req = express_1.request, res = express_1.response) {
     const { body } = req;
     try {
-        const existeEmail = yield usuarioM_1.default.findOne({ where: { correo: body.correo } });
+        const existeEmail = yield asociaciones_1.Usuario.findOne({ where: { correo: body.correo } });
         if (existeEmail) {
             return res.status(400).json({
                 msg: 'Ya existe un usuario con el email ' + body.correo
             });
         }
         const { contrasenia } = req.body;
-        const usuario = new usuarioM_1.default(body);
-        const salt = bcryptjs.genSaltSync();
-        usuario.contrasenia = bcryptjs.hashSync(contrasenia, salt);
+        const usuario = new asociaciones_1.Usuario(body);
+        const salt = bcryptjs_1.default.genSaltSync();
+        usuario.contrasenia = bcryptjs_1.default.hashSync(contrasenia, salt);
         yield usuario.save();
         res.json(usuario);
     }
@@ -173,19 +176,28 @@ const postUsuario = (...args_1) => __awaiter(void 0, [...args_1], void 0, functi
 });
 exports.postUsuario = postUsuario;
 const getUsuarios = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const usuarios = yield usuarioM_1.default.findAll();
+    const usuarios = yield asociaciones_1.Usuario.findAll();
     res.json({ usuarios });
 });
 exports.getUsuarios = getUsuarios;
 const getUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const usuario = yield usuarioM_1.default.findByPk(id);
-    if (usuario) {
-        res.json(usuario);
+    try {
+        // Utiliza la asociación definida en la clase 'asociaciones' para cargar el 'Solicitante' asociado
+        const usuario = yield asociaciones_1.Usuario.findByPk(id, { include: solicitante_1.default });
+        if (usuario) {
+            res.json(usuario);
+        }
+        else {
+            res.status(404).json({
+                msg: `No existe un usuario con el id ${id}`
+            });
+        }
     }
-    else {
-        res.status(404).json({
-            msg: `No existe un usuario con el id ${id}`
+    catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Hable con el administrador'
         });
     }
 });
@@ -194,7 +206,7 @@ const putUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const { id } = req.params;
     const { body } = req;
     try {
-        const usuario = yield usuarioM_1.default.findByPk(id);
+        const usuario = yield asociaciones_1.Usuario.findByPk(id);
         if (!usuario || usuario.estatus == 'IA') {
             return res.status(404).json({
                 msg: 'No existe un usuario con el id ' + id
@@ -213,7 +225,7 @@ const putUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.putUsuario = putUsuario;
 const deleteUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const usuario = yield usuarioM_1.default.findByPk(id);
+    const usuario = yield asociaciones_1.Usuario.findByPk(id);
     if (!usuario || usuario.estatus == 'IA') {
         return res.status(404).json({
             msg: 'No existe un usuario con el id ' + id

@@ -7,9 +7,9 @@ const sequelize_1 = require("sequelize");
 const connection_1 = __importDefault(require("../database/connection"));
 const Solicitante = connection_1.default.define('Solicitante', {
     idSolicitante: {
-        type: sequelize_1.DataTypes.NUMBER,
-        primaryKey: true,
-        autoIncrement: true
+        type: sequelize_1.DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
     },
     nombre: {
         type: sequelize_1.DataTypes.STRING
@@ -41,11 +41,15 @@ const Solicitante = connection_1.default.define('Solicitante', {
     correo: {
         type: sequelize_1.DataTypes.STRING
     },
+    foto: {
+        type: sequelize_1.DataTypes.BLOB, // Cambiado a DataTypes.BLOB para representar datos binarios
+        allowNull: false // Añadido para evitar valores nulos en la columna 'foto'
+    }
 }, {
-    // Opciones del modelo
+    // Model options
     tableName: 'solicitante',
     timestamps: false,
-    schema: "GeoApoyo"
+    schema: 'GeoApoyo'
 });
 exports.default = Solicitante;
 //# sourceMappingURL=solicitante.js.map

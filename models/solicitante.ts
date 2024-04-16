@@ -1,8 +1,8 @@
 import { Model, DataTypes } from 'sequelize';
-import db from '../database/connection';
+import databaseConnection  from '../database/connection';
 
 interface SolicitanteAttributes {
-    idSolicitante: Number,
+    idSolicitante: number;
     nombre: string;
     primerApellido: string;
     segundoApellido: string;
@@ -13,17 +13,16 @@ interface SolicitanteAttributes {
     tipoApoyo: string;
     estatus: string;
     correo: string;
+    foto: Buffer | Uint8Array;
 }
 
-export interface SolicitanteInstance
-    extends Model<SolicitanteAttributes>,
-    SolicitanteAttributes { }
+export interface SolicitanteInstance extends Model<SolicitanteAttributes>, SolicitanteAttributes {}
 
-const Solicitante = db.define<SolicitanteInstance>('Solicitante', {
+const Solicitante = databaseConnection.define<SolicitanteInstance>('Solicitante', {
     idSolicitante: {
-        type: DataTypes.NUMBER,
-        primaryKey: true,
-        autoIncrement: true
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
     },
     nombre: {
         type: DataTypes.STRING
@@ -55,12 +54,15 @@ const Solicitante = db.define<SolicitanteInstance>('Solicitante', {
     correo: {
         type: DataTypes.STRING
     },
-},
-    {
-        // Opciones del modelo
-        tableName: 'solicitante',
-        timestamps: false,
-        schema: "GeoApoyo"
-    });
+    foto: {
+        type: DataTypes.BLOB, // Cambiado a DataTypes.BLOB para representar datos binarios
+        allowNull: false // Añadido para evitar valores nulos en la columna 'foto'
+    }
+}, {
+    // Model options
+    tableName: 'solicitante',
+    timestamps: false,
+    schema: 'GeoApoyo'
+});
 
 export default Solicitante;
