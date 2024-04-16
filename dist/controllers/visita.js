@@ -13,104 +13,76 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fotoSolicitante = exports.confirmarVisita = exports.actualizarEstatus = exports.getVisitasPendientes = void 0;
-const multer_1 = __importDefault(require("multer"));
-const uuid_1 = require("uuid");
+const visita_1 = __importDefault(require("../models/visita"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
-const visita_1 = __importDefault(require("../models/visita"));
 const solicitante_1 = __importDefault(require("../models/solicitante"));
 const domicilio_1 = __importDefault(require("../models/domicilio"));
-// Configure multer for image uploads
-const upload = (0, multer_1.default)({
-    dest: 'uploads/', // Temporary upload directory
-    fileFilter: (req, file, cb) => {
-        const allowedExtensions = ['.jpg', '.jpeg', '.png'];
-        if (!allowedExtensions.includes(path_1.default.extname(file.originalname))) {
-            return cb(new Error('Invalid file type. Only JPEG, JPG, and PNG are allowed'));
-        }
-        cb(null, true);
-    }
-});
-// Get pending visits for a user
 const getVisitasPendientes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
     try {
+        const { id } = req.params;
         const visitas = yield visita_1.default.findAll({
+            include: [
+                { model: solicitante_1.default },
+                { model: domicilio_1.default }
+            ],
             where: {
-                confirmacionSolicitante: false,
-                usuario_idUsuario: id
-            },
-            include: [{
-                    model: solicitante_1.default,
-                    include: [domicilio_1.default]
-                }]
+                solicitante_idSolicitante: id,
+                domicilio_idDomicilio: id,
+                confirmacionSolicitante: false
+            }
         });
-        res.json(visitas);
+        if (visitas.length === 0) {
+            res.status(400).json('Solicitante con id: ' + id + ' visitado');
+        }
+        else {
+            res.json(visitas);
+        }
     }
     catch (error) {
-        console.error('Error al obtener visitas pendientes:', error);
-        res.status(500).send('Error interno del servidor');
+        console.error('Error al obtener las visitas pendientes:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
 exports.getVisitasPendientes = getVisitasPendientes;
-// Update the status of a visit
 const actualizarEstatus = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
-    const { estatus, razon, latitud, longitud } = req.body;
     try {
-        // Handle image upload using multer
-        const file = req.file;
-        if (!file) {
-            return res.status(400).send('No se ha seleccionado una foto');
-        }
-        // Generate a unique filename for the image
-        const fileName = `${(0, uuid_1.v4)()}${path_1.default.extname(file.originalname)}`;
-        const filePath = path_1.default.join(__dirname, '..', 'uploads', fileName);
-        // Move the uploaded file to the uploads directory
-        fs_1.default.writeFileSync(filePath, file.buffer);
-        // Update the visit with all the data
-        yield visita_1.default.update({
-            estatus,
-            razon,
-            latitudVisita: latitud,
-            longitudVisita: longitud,
-            fotoDomicilio: fileName // Use the generated filename
-        }, {
-            where: { idVisita: id }
-        });
-        res.send('Estatus de visita actualizado exitosamente');
+        const { id, estatus, Razon, latitud, longitud, fotoCasa } = req.body;
+        yield visita_1.default.update({ estatus, Razon, latitudVisita: latitud, longitudVisita: longitud, fotoDomicilio: fotoCasa }, { where: { idVisita: id } });
+        res.json({ message: 'Estatus actualizado correctamente' });
     }
     catch (error) {
         console.error('Error al actualizar el estatus de la visita:', error);
-        res.status(500).send('Error interno del servidor');
+        res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
 exports.actualizarEstatus = actualizarEstatus;
-// Confirm a visit
 const confirmarVisita = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
-    const { idSolicitante, fecha, hora, latitud, longitud } = req.body;
     try {
-        yield visita_1.default.update({
+        const { idSolicitante, idDomicilio, idUsuario, fecha, hora, latitud, longitud } = req.body;
+        yield visita_1.default.create({
+            idVisita: 0,
             confirmacionSolicitante: true,
             estatus: 'EN',
-            Razon: 'encontrado',
-            fecha,
-            hora,
+            Razon: 'encontrado', // Corregido a minúscula para que coincida con la definición del modelo
+            fecha: new Date(fecha), // Asegúrate de convertir la fecha a un objeto Date si no lo es
+            hora, // No es necesario convertir la hora si ya está en el formato correcto
             latitudVisita: latitud,
-            longitudVisita: longitud
-        }, {
-            where: { idVisita: id }
+            longitudVisita: longitud,
+            fotoDomicilio: '...', // Asegúrate de proporcionar una URL válida para la foto
+            FotoIdentidicacion: '...', // Asegúrate de proporcionar una URL válida para la foto de identificación
+            solicitante_idSolicitante: idSolicitante,
+            domicilio_idDomicilio: idDomicilio,
+            usuario_idUsuario: idUsuario,
         });
-        res.send('Visita confirmada exitosamente');
+        res.json({ message: 'Visita confirmada correctamente' });
     }
     catch (error) {
         console.error('Error al confirmar la visita:', error);
-        res.status(500).send('Error interno del servidor');
+        res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
 exports.confirmarVisita = confirmarVisita;
-// Get solicitante photo (not implemented yet)
 const fotoSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {

@@ -111,6 +111,8 @@ export const fotoSolicitante = async (req: Request, res: Response): Promise<void
 
     // Send the photo file as a response
     res.sendFile(photoPath);
+
+    
   } catch (error) {
     console.error('Error al obtener la foto del solicitante:', error);
     res.status(500).send('Error interno del servidor');
