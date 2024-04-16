@@ -1,6 +1,6 @@
 import express, {Application} from 'express';
 import userRoutes from '../routes/usuarioR';
-import VisitaRoutes from '../routes/visita';
+import VisitaRoutes from '../routes/visita'; // Importa las rutas de visitas
 import cors from 'cors';
 
 import db from '../database/connection';

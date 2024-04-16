@@ -8,16 +8,26 @@ export const visitasPendientes = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const visitas = await Visita.findAll({
-      where: {
-        confirmacionSolicitante: false,
-        solicitante_idSolicitante: id
-      },
       include: [
         { model: Solicitante },
         { model: Domicilio }
-      ]
+      ],
+      where: {
+        solicitante_idSolicitante: id,
+        domicilio_idDomicilio: id,
+        confirmacionSolicitante: false
+      }
     });
-    res.json(visitas);
+
+    if(visitas.length === 0){
+      res.status(400).json('Solicitante con id: ' +id+ ' visitado')
+    }else{
+
+      res.json(visitas);
+    }
+
+
+
   } catch (error) {
     console.error('Error al obtener las visitas pendientes:', error);
     res.status(500).json({ error: 'Error interno del servidor' });

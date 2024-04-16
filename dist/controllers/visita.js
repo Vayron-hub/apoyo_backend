@@ -20,16 +20,22 @@ const visitasPendientes = (req, res) => __awaiter(void 0, void 0, void 0, functi
     try {
         const { id } = req.params;
         const visitas = yield visita_1.default.findAll({
-            where: {
-                confirmacionSolicitante: false,
-                solicitante_idSolicitante: id
-            },
             include: [
                 { model: solicitante_1.default },
                 { model: domicilio_1.default }
-            ]
+            ],
+            where: {
+                solicitante_idSolicitante: id,
+                domicilio_idDomicilio: id,
+                confirmacionSolicitante: false
+            }
         });
-        res.json(visitas);
+        if (visitas.length === 0) {
+            res.status(400).json('Solicitante con id: ' + id + ' visitado');
+        }
+        else {
+            res.json(visitas);
+        }
     }
     catch (error) {
         console.error('Error al obtener las visitas pendientes:', error);

@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const usuarioR_1 = __importDefault(require("../routes/usuarioR"));
-const visita_1 = __importDefault(require("../routes/visita"));
+const visita_1 = __importDefault(require("../routes/visita")); // Importa las rutas de visitas
 const cors_1 = __importDefault(require("cors"));
 const connection_1 = __importDefault(require("../database/connection"));
 class Server {
