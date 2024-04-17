@@ -15,30 +15,34 @@ import Usuario from '../models/usuarioM'; // Importa las asociaciones
 
 //TRAER SOLICITANTES
 export const getSolicitantes = async (req: Request, res: Response) => {
-
     const solicitantes = await Solicitante.findAll();
+    
+    // Remover el campo 'foto' de cada solicitante
+    const solicitantesSinFoto = solicitantes.map((solicitante) => {
+        const { foto, ...solicitanteSinFoto } = solicitante.toJSON();
+        return solicitanteSinFoto;
+    });
 
-
-    res.json({ solicitantes });
-
+    res.json({ solicitantes: solicitantesSinFoto });
 }
 
-//TRAER UN SOLICITANTE MEDIANTE UN ID
 export const getSolicitante = async (req: Request, res: Response) => {
-
     const { id } = req.params;
 
     const solicitante = await Solicitante.findByPk(id);
 
+    if (!solicitante) {
+        return res.status(404).json({
+            msg: `No existe un solicitante con el id ${id}`
+        });
+    }
+
+    // Remover el campo 'foto' del solicitante
+    const { foto, ...solicitanteSinFoto } = solicitante.toJSON();
+
     const domicilioS = await Domicilio.findOne({ where: { solicitante_idSolicitante: id } });
 
-    if (solicitante) {
-        res.json({ solicitante, domicilioS });
-    } else {
-        res.status(404).json({
-            msg: `No existe un solicitante con el id ${id}`
-        })
-    }
+    res.json({ solicitante: solicitanteSinFoto, domicilioS });
 }
 
 
