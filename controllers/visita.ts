@@ -26,7 +26,7 @@ export const getVisitasPendientes = async (req: Request, res: Response) => {
     const domicilio = await Domicilio.findAll({where: {idDomicilio: id}});
 
     if(visitas.length === 0){
-      res.status(400).json('El solicitante con id: ' +id+ ' ya ha sido visitado o no existe')
+      res.status(400).json('El id: ' +id+ ' ya ha sido visitado o no existe')
     }else{
 
       res.json({visitas, domicilio});

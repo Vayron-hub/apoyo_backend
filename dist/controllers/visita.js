@@ -36,7 +36,7 @@ const getVisitasPendientes = (req, res) => __awaiter(void 0, void 0, void 0, fun
         });
         const domicilio = yield domicilio_1.default.findAll({ where: { idDomicilio: id } });
         if (visitas.length === 0) {
-            res.status(400).json('El solicitante con id: ' + id + ' ya ha sido visitado o no existe');
+            res.status(400).json('El id: ' + id + ' ya ha sido visitado o no existe');
         }
         else {
             res.json({ visitas, domicilio });
