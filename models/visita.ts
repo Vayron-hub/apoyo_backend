@@ -40,10 +40,7 @@ const Visita = databaseConnection.define('visita', {
     },
     usuario_idUsuario: {
         type: DataTypes.NUMBER
-    },
-    domicilio_idDomicilio: {
-        type: DataTypes.NUMBER
-    },
+    }
 },
     {
         // Opciones del modelo
@@ -53,7 +50,6 @@ const Visita = databaseConnection.define('visita', {
 
     });
 Visita.belongsTo(Solicitante, { foreignKey: 'solicitante_idSolicitante' });
-Visita.belongsTo(Domicilio, { foreignKey: 'domicilio_idDomicilio' });
 Visita.belongsTo(Usuario, { foreignKey: 'usuario_idUsuario' });
 
 export default Visita;
