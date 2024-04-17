@@ -1,6 +1,6 @@
 const { check } = require('express-validator');
 import { Router } from 'express';
-
+import multer from 'multer';
 import { login } from '../controllers/auth'
 import { validarCampos, emailExiste } from '../middlewares/validarCampos';
 import {
@@ -20,6 +20,8 @@ import {
 
 const router = Router();
 
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 //* RUTAS DE SOLICITANTE
 //VER SOLICITANTES
@@ -36,11 +38,21 @@ router.put('/rechazar/:id', rechazarApoyo);
 
 //AGREGAR UN SOLICITANTE
 router.post('/solicitante',
-  
+    check('nombre', 'El nombre es obligatorio').not().isEmpty(),
+    check('primerApellido', 'El nombre es obligatorio').not().isEmpty(),
+    check('segundoApellido', 'El nombre es obligatorio').not().isEmpty(),
+    check('genero', 'El nombre es obligatorio').not().isEmpty(),
+    check('edad', 'El nombre es obligatorio').not().isEmpty(),
+    check('institucion', 'El nombre es obligatorio').not().isEmpty(),
+    check('grado', 'El nombre es obligatorio').not().isEmpty(),
+    check('tipoApoyo', 'El nombre es obligatorio').not().isEmpty(),
+    check('estatus', 'El nombre es obligatorio').not().isEmpty(),
+    check('correo', 'El nombre es obligatorio').not().isEmpty(),
+    upload.single('foto'),
     postSolicitante);
 
- //ACTUALIZAR SOLICITANTE
-router.put('/AS/:id',putSolicitante);
+//ACTUALIZAR SOLICITANTE
+router.put('/AS/:id', putSolicitante);
 // ELIMINAR SOLICITANTE
 router.delete('/BS/:id', deleteSolicitante);
 
@@ -76,20 +88,11 @@ router.post('/usuario',
     ],
     postUsuario);
 
-    //ACTUALIZAR UN USUARIO
+//ACTUALIZAR UN USUARIO
 router.put('/AU/:id', putUsuario);
 
 //ELIMINAR UN USUARIO
 router.delete('/BU/:id', deleteUsuario);
-
-
-
-
-
-
-
-
-
 
 export default router;
 

@@ -1,11 +1,17 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const { check } = require('express-validator');
 const express_1 = require("express");
+const multer_1 = __importDefault(require("multer"));
 const auth_1 = require("../controllers/auth");
 const validarCampos_1 = require("../middlewares/validarCampos");
 const usuarioC_1 = require("../controllers/usuarioC");
 const router = (0, express_1.Router)();
+const storage = multer_1.default.memoryStorage();
+const upload = (0, multer_1.default)({ storage: storage });
 //* RUTAS DE SOLICITANTE
 //VER SOLICITANTES
 router.get('/solicitantes', usuarioC_1.getSolicitantes);
@@ -16,7 +22,7 @@ router.put('/aprobar/:id', usuarioC_1.aprobarApoyo);
 //RECHAZAR APOYO
 router.put('/rechazar/:id', usuarioC_1.rechazarApoyo);
 //AGREGAR UN SOLICITANTE
-router.post('/solicitante', usuarioC_1.postSolicitante);
+router.post('/solicitante', check('nombre', 'El nombre es obligatorio').not().isEmpty(), check('primerApellido', 'El nombre es obligatorio').not().isEmpty(), check('segundoApellido', 'El nombre es obligatorio').not().isEmpty(), check('genero', 'El nombre es obligatorio').not().isEmpty(), check('edad', 'El nombre es obligatorio').not().isEmpty(), check('institucion', 'El nombre es obligatorio').not().isEmpty(), check('grado', 'El nombre es obligatorio').not().isEmpty(), check('tipoApoyo', 'El nombre es obligatorio').not().isEmpty(), check('estatus', 'El nombre es obligatorio').not().isEmpty(), check('correo', 'El nombre es obligatorio').not().isEmpty(), upload.single('foto'), usuarioC_1.postSolicitante);
 //ACTUALIZAR SOLICITANTE
 router.put('/AS/:id', usuarioC_1.putSolicitante);
 // ELIMINAR SOLICITANTE

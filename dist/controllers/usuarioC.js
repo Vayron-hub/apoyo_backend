@@ -15,13 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteUsuario = exports.putUsuario = exports.getUsuario = exports.getUsuarios = exports.postUsuario = exports.rechazarApoyo = exports.aprobarApoyo = exports.postSolicitante = exports.deleteSolicitante = exports.putSolicitante = exports.getSolicitante = exports.getSolicitantes = void 0;
 const express_1 = require("express");
 const bcryptjs_1 = __importDefault(require("bcryptjs")); // Importa bcryptjs como módulo ES6
-// import Usuario from '../models/usuarioM';
 const solicitante_1 = __importDefault(require("../models/solicitante"));
 const domicilio_1 = __importDefault(require("../models/domicilio"));
 const formulario_1 = __importDefault(require("../models/formulario"));
 const connection_1 = __importDefault(require("../database/connection"));
-const solicitanteController_1 = __importDefault(require("../controllers/solicitanteController"));
-const asociaciones_1 = require("../models/asociaciones"); // Importa las asociaciones
+const usuarioM_1 = __importDefault(require("../models/usuarioM")); // Importa las asociaciones
 //? POST DE SOLICITANTE
 //TRAER SOLICITANTES
 const getSolicitantes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -92,18 +90,26 @@ const deleteSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, functi
 });
 exports.deleteSolicitante = deleteSolicitante;
 const postSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    //Se accede a los valores del request
-    const { solicitante, domicilio, formulario } = req.body;
+    let { solicitante, domicilio, formulario } = req.body;
+    if (!req.file) {
+        res.status(400).json('El campo foto en solicitante es requerido');
+        return;
+    }
+    // Convertir la imagen a un Buffer
+    const bufferImagen = Buffer.from(req.file.buffer);
     try {
-        //Se inicia una transaccion
+        // Parsear la cadena JSON de solicitante a un objeto
+        solicitante = JSON.parse(solicitante);
+        domicilio = JSON.parse(domicilio);
+        formulario = JSON.parse(formulario);
+        // Añadir la foto al objeto solicitante
+        solicitante.foto = bufferImagen;
         const resultados = yield connection_1.default.transaction((t) => __awaiter(void 0, void 0, void 0, function* () {
-            //Se guarda en base de datos el solicitante
+            // Crear el solicitante con la imagen
             const createSolicitante = yield solicitante_1.default.create(solicitante, { transaction: t });
-            //Se guarda en base de datos el domicilio con la llave foranea de solicitante
+            // Crear el domicilio y formulario asociados
             const createDomicilio = yield domicilio_1.default.create(Object.assign(Object.assign({}, domicilio), { solicitante_idSolicitante: createSolicitante.idSolicitante }), { transaction: t });
-            //Se guarda en base de datos el formulario con la llave foranea del solicitante
             const createFormulario = yield formulario_1.default.create(Object.assign(Object.assign({}, formulario), { solicitante_idSolicitante: createSolicitante.idSolicitante }), { transaction: t });
-            //Se retornan los valores
             return {
                 createSolicitante,
                 createDomicilio,
@@ -113,7 +119,8 @@ const postSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, function
         res.send({
             resultados
         });
-        new solicitanteController_1.default();
+        // No estoy seguro de qué hace 'seleccionarVisitadorDisponible', así que asegúrate de que esté funcionando como esperas.
+        // new seleccionarVisitadorDisponible();
     }
     catch (error) {
         console.log(error);
@@ -123,6 +130,41 @@ const postSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.postSolicitante = postSolicitante;
+// export const postSolicitante = async (req: Request, res: Response) => {
+//     //Se accede a los valores del request
+//     const { solicitante, domicilio, formulario } = req.body;
+//     try {
+//         //Se inicia una transaccion
+//         const resultados = await db.transaction(async (t) => {
+//             //Se guarda en base de datos el solicitante
+//             const createSolicitante = await Solicitante.create(solicitante, { transaction: t });
+//             //Se guarda en base de datos el domicilio con la llave foranea de solicitante
+//             const createDomicilio = await Domicilio.create({
+//                 ...domicilio,
+//                 solicitante_idSolicitante: createSolicitante.idSolicitante
+//             }, { transaction: t });
+//             //Se guarda en base de datos el formulario con la llave foranea del solicitante
+//             const createFormulario = await Formulario.create({
+//                 ...formulario,
+//                 solicitante_idSolicitante: createSolicitante.idSolicitante
+//             }, { transaction: t });
+//             //Se retornan los valores
+//             return {
+//                 createSolicitante,
+//                 createDomicilio,
+//                 createFormulario
+//             }
+//         });
+//         res.send({
+//             resultados
+//         });
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).send({
+//             msg: error,
+//         })
+//     }
+// }
 const aprobarApoyo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const { monto } = req.body;
@@ -154,14 +196,14 @@ exports.rechazarApoyo = rechazarApoyo;
 const postUsuario = (...args_1) => __awaiter(void 0, [...args_1], void 0, function* (req = express_1.request, res = express_1.response) {
     const { body } = req;
     try {
-        const existeEmail = yield asociaciones_1.Usuario.findOne({ where: { correo: body.correo } });
+        const existeEmail = yield usuarioM_1.default.findOne({ where: { correo: body.correo } });
         if (existeEmail) {
             return res.status(400).json({
                 msg: 'Ya existe un usuario con el email ' + body.correo
             });
         }
         const { contrasenia } = req.body;
-        const usuario = new asociaciones_1.Usuario(body);
+        const usuario = new usuarioM_1.default(body);
         const salt = bcryptjs_1.default.genSaltSync();
         usuario.contrasenia = bcryptjs_1.default.hashSync(contrasenia, salt);
         yield usuario.save();
@@ -176,7 +218,7 @@ const postUsuario = (...args_1) => __awaiter(void 0, [...args_1], void 0, functi
 });
 exports.postUsuario = postUsuario;
 const getUsuarios = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const usuarios = yield asociaciones_1.Usuario.findAll();
+    const usuarios = yield usuarioM_1.default.findAll();
     res.json({ usuarios });
 });
 exports.getUsuarios = getUsuarios;
@@ -184,7 +226,7 @@ const getUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const { id } = req.params;
     try {
         // Utiliza la asociación definida en la clase 'asociaciones' para cargar el 'Solicitante' asociado
-        const usuario = yield asociaciones_1.Usuario.findByPk(id, { include: solicitante_1.default });
+        const usuario = yield usuarioM_1.default.findByPk(id, { include: solicitante_1.default });
         if (usuario) {
             res.json(usuario);
         }
@@ -206,7 +248,7 @@ const putUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const { id } = req.params;
     const { body } = req;
     try {
-        const usuario = yield asociaciones_1.Usuario.findByPk(id);
+        const usuario = yield usuarioM_1.default.findByPk(id);
         if (!usuario || usuario.estatus == 'IA') {
             return res.status(404).json({
                 msg: 'No existe un usuario con el id ' + id
@@ -225,7 +267,7 @@ const putUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.putUsuario = putUsuario;
 const deleteUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const usuario = yield asociaciones_1.Usuario.findByPk(id);
+    const usuario = yield usuarioM_1.default.findByPk(id);
     if (!usuario || usuario.estatus == 'IA') {
         return res.status(404).json({
             msg: 'No existe un usuario con el id ' + id

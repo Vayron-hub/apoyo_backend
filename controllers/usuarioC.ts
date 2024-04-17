@@ -2,12 +2,12 @@ import { request, response } from 'express';
 import { Request, Response } from 'express';
 import bcryptjs from 'bcryptjs'; // Importa bcryptjs como módulo ES6
 // import Usuario from '../models/usuarioM';
+import { SolicitanteInstance } from '../models/solicitante';
 import Solicitante from '../models/solicitante';
 import Domicilio from '../models/domicilio';
 import Formulario from '../models/formulario';
-import db from '../database/connection';
-import seleccionarVisitadorDisponible from '../controllers/solicitanteController'
-import { Usuario } from '../models/asociaciones'; // Importa las asociaciones
+import databaseConnection from '../database/connection';
+import Usuario from '../models/usuarioM'; // Importa las asociaciones
 
 
 
@@ -17,9 +17,9 @@ import { Usuario } from '../models/asociaciones'; // Importa las asociaciones
 export const getSolicitantes = async (req: Request, res: Response) => {
 
     const solicitantes = await Solicitante.findAll();
-    
 
-    res.json({ solicitantes});
+
+    res.json({ solicitantes });
 
 }
 
@@ -33,7 +33,7 @@ export const getSolicitante = async (req: Request, res: Response) => {
     const domicilioS = await Domicilio.findOne({ where: { solicitante_idSolicitante: id } });
 
     if (solicitante) {
-        res.json({solicitante, domicilioS});
+        res.json({ solicitante, domicilioS });
     } else {
         res.status(404).json({
             msg: `No existe un solicitante con el id ${id}`
@@ -106,32 +106,45 @@ export const deleteSolicitante = async (req: Request, res: Response) => {
 }
 
 
-export const postSolicitante = async (req: Request, res: Response) => {
 
-    //Se accede a los valores del request
-    const { solicitante, domicilio, formulario } = req.body;
+export const postSolicitante = async (req: Request, res: Response) => {
+    let { solicitante, domicilio, formulario } = req.body;
+
+
+    if (!req.file) {
+        res.status(400).json('El campo foto en solicitante es requerido');
+        return;
+    }
+
+    // Convertir la imagen a un Buffer
+    const bufferImagen = Buffer.from(req.file.buffer);
 
     try {
-        //Se inicia una transaccion
-        const resultados = await db.transaction(async (t) => {
+        // Parsear la cadena JSON de solicitante a un objeto
+        solicitante = JSON.parse(solicitante);
+        domicilio = JSON.parse(domicilio);
+        formulario= JSON.parse(formulario);
 
-            //Se guarda en base de datos el solicitante
-            const createSolicitante = await Solicitante.create(solicitante, { transaction: t });
+        // Añadir la foto al objeto solicitante
+        solicitante.foto = bufferImagen;
 
-            //Se guarda en base de datos el domicilio con la llave foranea de solicitante
+        const resultados = await databaseConnection.transaction(async (t) => {
+
+            // Crear el solicitante con la imagen
+            const createSolicitante = await Solicitante.create( solicitante ,{ transaction: t });
+
+
+            // Crear el domicilio y formulario asociados
             const createDomicilio = await Domicilio.create({
                 ...domicilio,
                 solicitante_idSolicitante: createSolicitante.idSolicitante
             }, { transaction: t });
 
-            //Se guarda en base de datos el formulario con la llave foranea del solicitante
             const createFormulario = await Formulario.create({
                 ...formulario,
                 solicitante_idSolicitante: createSolicitante.idSolicitante
             }, { transaction: t });
 
-
-            //Se retornan los valores
             return {
                 createSolicitante,
                 createDomicilio,
@@ -143,7 +156,8 @@ export const postSolicitante = async (req: Request, res: Response) => {
             resultados
         });
 
-        new seleccionarVisitadorDisponible();
+        // No estoy seguro de qué hace 'seleccionarVisitadorDisponible', así que asegúrate de que esté funcionando como esperas.
+        // new seleccionarVisitadorDisponible();
 
     } catch (error) {
         console.log(error);
@@ -151,21 +165,68 @@ export const postSolicitante = async (req: Request, res: Response) => {
             msg: error,
         })
     }
-
 }
+// export const postSolicitante = async (req: Request, res: Response) => {
+
+//     //Se accede a los valores del request
+//     const { solicitante, domicilio, formulario } = req.body;
 
 
-export const aprobarApoyo = async( req: Request, res: Response ) => {
+
+//     try {
+//         //Se inicia una transaccion
+//         const resultados = await db.transaction(async (t) => {
+
+//             //Se guarda en base de datos el solicitante
+//             const createSolicitante = await Solicitante.create(solicitante, { transaction: t });
+
+//             //Se guarda en base de datos el domicilio con la llave foranea de solicitante
+//             const createDomicilio = await Domicilio.create({
+//                 ...domicilio,
+//                 solicitante_idSolicitante: createSolicitante.idSolicitante
+//             }, { transaction: t });
+
+//             //Se guarda en base de datos el formulario con la llave foranea del solicitante
+//             const createFormulario = await Formulario.create({
+//                 ...formulario,
+//                 solicitante_idSolicitante: createSolicitante.idSolicitante
+//             }, { transaction: t });
+
+
+//             //Se retornan los valores
+//             return {
+//                 createSolicitante,
+//                 createDomicilio,
+//                 createFormulario
+//             }
+//         });
+
+//         res.send({
+//             resultados
+//         });
+
+
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).send({
+//             msg: error,
+//         })
+//     }
+
+// }
+
+
+export const aprobarApoyo = async (req: Request, res: Response) => {
 
     const { id } = req.params;
 
     const { monto } = req.body;
 
-    const solicitante = await Solicitante.findByPk( id );
+    const solicitante = await Solicitante.findByPk(id);
 
-    if( !solicitante){
+    if (!solicitante) {
         return res.status(404).json({
-            msg: `El solicitante con el id: ${ id } no existe`
+            msg: `El solicitante con el id: ${id} no existe`
         })
     }
 
@@ -176,15 +237,15 @@ export const aprobarApoyo = async( req: Request, res: Response ) => {
     res.json(solicitante);
 }
 
-export const rechazarApoyo = async( req: Request, res: Response ) => {
+export const rechazarApoyo = async (req: Request, res: Response) => {
 
     const { id } = req.params;
 
-    const solicitante = await Solicitante.findByPk( id );
+    const solicitante = await Solicitante.findByPk(id);
 
-    if( !solicitante || solicitante.estatus == 'inactivo'){
+    if (!solicitante || solicitante.estatus == 'inactivo') {
         return res.status(404).json({
-            msg: `El solicitante con el id: ${ id } no existe`
+            msg: `El solicitante con el id: ${id} no existe`
         })
     }
 
