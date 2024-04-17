@@ -17,7 +17,7 @@ const Visita = databaseConnection.define('visita', {
     estatus: {
         type: DataTypes.STRING
     },
-    Razon: {
+    razon: {
         type: DataTypes.STRING
     },
     latitudVisita: {
@@ -40,7 +40,7 @@ const Visita = databaseConnection.define('visita', {
     },
     usuario_idUsuario: {
         type: DataTypes.NUMBER
-    }
+    },
 },
     {
         // Opciones del modelo

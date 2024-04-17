@@ -11,21 +11,25 @@ export const getVisitasPendientes = async (req: Request, res: Response) => {
     const { id } = req.params;
     const visitas = await Visita.findAll({
       include: [
-        { model: Solicitante },
-        { model: Domicilio }
+        { model: Solicitante, attributes: { exclude: ['foto','genero',
+        'edad',
+        'institucion',
+        'grado',
+        'tipoApoyo'] } },
       ],
       where: {
         solicitante_idSolicitante: id,
-        domicilio_idDomicilio: id,
         confirmacionSolicitante: false
       }
     });
+
+    const domicilio = await Domicilio.findAll({where: {idDomicilio: id}});
 
     if(visitas.length === 0){
       res.status(400).json('El solicitante con id: ' +id+ ' ya ha sido visitado o no existe')
     }else{
 
-      res.json(visitas);
+      res.json({visitas, domicilio});
     }
 
 

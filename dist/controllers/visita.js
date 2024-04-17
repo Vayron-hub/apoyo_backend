@@ -23,20 +23,23 @@ const getVisitasPendientes = (req, res) => __awaiter(void 0, void 0, void 0, fun
         const { id } = req.params;
         const visitas = yield visita_1.default.findAll({
             include: [
-                { model: solicitante_1.default },
-                { model: domicilio_1.default }
+                { model: solicitante_1.default, attributes: { exclude: ['foto', 'genero',
+                            'edad',
+                            'institucion',
+                            'grado',
+                            'tipoApoyo'] } },
             ],
             where: {
                 solicitante_idSolicitante: id,
-                domicilio_idDomicilio: id,
                 confirmacionSolicitante: false
             }
         });
+        const domicilio = yield domicilio_1.default.findAll({ where: { idDomicilio: id } });
         if (visitas.length === 0) {
             res.status(400).json('El solicitante con id: ' + id + ' ya ha sido visitado o no existe');
         }
         else {
-            res.json(visitas);
+            res.json({ visitas, domicilio });
         }
     }
     catch (error) {
