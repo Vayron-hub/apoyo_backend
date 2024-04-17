@@ -239,7 +239,7 @@ const getUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const { id } = req.params;
     try {
         // Utiliza la asociación definida en la clase 'asociaciones' para cargar el 'Solicitante' asociado
-        const usuario = yield usuarioM_1.default.findByPk(id, { include: solicitante_1.default });
+        const usuario = yield usuarioM_1.default.findByPk(id);
         if (usuario) {
             res.json(usuario);
         }

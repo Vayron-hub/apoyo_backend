@@ -306,7 +306,7 @@ export const getUsuario = async (req: Request, res: Response) => {
 
     try {
         // Utiliza la asociación definida en la clase 'asociaciones' para cargar el 'Solicitante' asociado
-        const usuario = await Usuario.findByPk(id, { include: Solicitante });
+        const usuario = await Usuario.findByPk(id);
 
         if (usuario) {
             res.json(usuario);
