@@ -110,7 +110,6 @@ export const deleteSolicitante = async (req: Request, res: Response) => {
 export const postSolicitante = async (req: Request, res: Response) => {
     let { solicitante, domicilio, formulario } = req.body;
 
-
     if (!req.file) {
         res.status(400).json('El campo foto en solicitante es requerido');
         return;
@@ -123,7 +122,7 @@ export const postSolicitante = async (req: Request, res: Response) => {
         // Parsear la cadena JSON de solicitante a un objeto
         solicitante = JSON.parse(solicitante);
         domicilio = JSON.parse(domicilio);
-        formulario= JSON.parse(formulario);
+        formulario = JSON.parse(formulario);
 
         // Añadir la foto al objeto solicitante
         solicitante.foto = bufferImagen;
@@ -131,8 +130,7 @@ export const postSolicitante = async (req: Request, res: Response) => {
         const resultados = await databaseConnection.transaction(async (t) => {
 
             // Crear el solicitante con la imagen
-            const createSolicitante = await Solicitante.create( solicitante ,{ transaction: t });
-
+            const createSolicitante = await Solicitante.create(solicitante, { transaction: t });
 
             // Crear el domicilio y formulario asociados
             const createDomicilio = await Domicilio.create({
@@ -145,27 +143,30 @@ export const postSolicitante = async (req: Request, res: Response) => {
                 solicitante_idSolicitante: createSolicitante.idSolicitante
             }, { transaction: t });
 
-            return {
-                createSolicitante,
+            // Crear un objeto sin la propiedad 'foto' para mostrar en resultados
+            const resultadosSinFoto = {
+                createSolicitante: {
+                    ...createSolicitante.toJSON(),
+                    foto: undefined, // Excluir la foto
+                },
                 createDomicilio,
                 createFormulario
-            }
+            };
+
+            return resultadosSinFoto;
         });
 
         res.send({
             resultados
         });
-
-        // No estoy seguro de qué hace 'seleccionarVisitadorDisponible', así que asegúrate de que esté funcionando como esperas.
-        // new seleccionarVisitadorDisponible();
-
     } catch (error) {
         console.log(error);
         res.status(500).send({
             msg: error,
-        })
+        });
     }
-}
+};
+
 // export const postSolicitante = async (req: Request, res: Response) => {
 
 //     //Se accede a los valores del request
