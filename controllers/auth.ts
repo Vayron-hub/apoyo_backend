@@ -40,8 +40,14 @@ export const login = async (req= request, res= response) => {
 
         const token = await generarJWT( usuario.idUsuario );
 
+        const usuarioRecortado = {
+            idUsuario: usuario.idUsuario,
+            nombre: usuario.nombre,
+            correo: usuario.correo
+        }
+
         res.json({
-            usuario,
+            usuarioRecortado,
             token: token
         });
     } catch (error) {

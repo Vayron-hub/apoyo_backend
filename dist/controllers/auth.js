@@ -40,7 +40,13 @@ const login = (...args_1) => __awaiter(void 0, [...args_1], void 0, function* (r
             });
         }
         const token = yield generarJWT(usuario.idUsuario);
+        const usuarioRecortado = {
+            idUsuario: usuario.idUsuario,
+            nombre: usuario.nombre,
+            correo: usuario.correo
+        };
         res.json({
+            usuarioRecortado,
             token: token
         });
     }
