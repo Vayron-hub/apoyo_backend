@@ -19,7 +19,12 @@ const solicitante_1 = __importDefault(require("../models/solicitante"));
 const domicilio_1 = __importDefault(require("../models/domicilio"));
 const formulario_1 = __importDefault(require("../models/formulario"));
 const connection_1 = __importDefault(require("../database/connection"));
+<<<<<<< HEAD
 const usuarioM_1 = __importDefault(require("../models/usuarioM")); // Importa las asociaciones
+=======
+// import seleccionarVisitadorDisponible from '../controllers/solicitanteController'
+const asociaciones_1 = require("../models/asociaciones"); // Importa las asociaciones
+>>>>>>> refs/remotes/origin/main
 //? POST DE SOLICITANTE
 //TRAER SOLICITANTES
 const getSolicitantes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -42,6 +47,7 @@ const getSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.getSolicitante = getSolicitante;
+//ACTUALIZAR SOLICITANTE CON SU DOMICILIO
 const putSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const { upsolicitante, updomicilio } = req.body;
@@ -75,6 +81,7 @@ const putSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.putSolicitante = putSolicitante;
+//ELIMINAR SOLICITATNTE DE MANERA LÓGICA
 const deleteSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const solicitante = yield solicitante_1.default.findByPk(id);
@@ -89,7 +96,9 @@ const deleteSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, functi
     });
 });
 exports.deleteSolicitante = deleteSolicitante;
+//GUARDAR SOLICITANTE
 const postSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+<<<<<<< HEAD
     let { solicitante, domicilio, formulario } = req.body;
     if (!req.file) {
         res.status(400).json('El campo foto en solicitante es requerido');
@@ -107,6 +116,20 @@ const postSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, function
         const resultados = yield connection_1.default.transaction((t) => __awaiter(void 0, void 0, void 0, function* () {
             // Crear el solicitante con la imagen
             const createSolicitante = yield solicitante_1.default.create(solicitante, { transaction: t });
+=======
+    const { solicitante, domicilio, formulario } = req.body;
+    console.log(solicitante);
+    if (!solicitante || !req.file) {
+        res.status(400).json('El campo foto en solicitante es requerido');
+        return;
+    }
+    const bufferImagen = Buffer.from(req.file.buffer);
+    try {
+        const resultados = yield connection_1.default.transaction((t) => __awaiter(void 0, void 0, void 0, function* () {
+            // Convertir la imagen a un Buffer
+            // Crear el solicitante con la imagen
+            const createSolicitante = yield solicitante_1.default.create(Object.assign(Object.assign({}, solicitante), { foto: bufferImagen }), { transaction: t });
+>>>>>>> refs/remotes/origin/main
             // Crear el domicilio y formulario asociados
             const createDomicilio = yield domicilio_1.default.create(Object.assign(Object.assign({}, domicilio), { solicitante_idSolicitante: createSolicitante.idSolicitante }), { transaction: t });
             const createFormulario = yield formulario_1.default.create(Object.assign(Object.assign({}, formulario), { solicitante_idSolicitante: createSolicitante.idSolicitante }), { transaction: t });
@@ -130,6 +153,7 @@ const postSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.postSolicitante = postSolicitante;
+<<<<<<< HEAD
 // export const postSolicitante = async (req: Request, res: Response) => {
 //     //Se accede a los valores del request
 //     const { solicitante, domicilio, formulario } = req.body;
@@ -165,6 +189,9 @@ exports.postSolicitante = postSolicitante;
 //         })
 //     }
 // }
+=======
+//APROBAR APOYO DE SOLICITANTE
+>>>>>>> refs/remotes/origin/main
 const aprobarApoyo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const { monto } = req.body;
@@ -179,6 +206,7 @@ const aprobarApoyo = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     res.json(solicitante);
 });
 exports.aprobarApoyo = aprobarApoyo;
+//RECHAZAR APOYO DE SOLICITANTE
 const rechazarApoyo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const solicitante = yield solicitante_1.default.findByPk(id);
