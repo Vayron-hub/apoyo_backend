@@ -51,8 +51,6 @@ export const putSolicitante = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { upsolicitante, updomicilio } = req.body;
 
-    console.log(updomicilio);
-    console.log(upsolicitante);
 
     try {
         const solicitante = await Solicitante.findByPk(id);

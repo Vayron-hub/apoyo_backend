@@ -60,8 +60,6 @@ exports.getSolicitante = getSolicitante;
 const putSolicitante = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const { upsolicitante, updomicilio } = req.body;
-    console.log(updomicilio);
-    console.log(upsolicitante);
     try {
         const solicitante = yield solicitante_1.default.findByPk(id);
         if (!solicitante || solicitante.estatus == 'IA') {

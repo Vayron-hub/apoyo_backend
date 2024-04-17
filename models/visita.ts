@@ -1,19 +1,23 @@
 import { DataTypes } from 'sequelize';
-import db from '../database/connection';
+import databaseConnection from '../database/connection';
 import Solicitante from './solicitante'; 
 import Domicilio from './domicilio';
 import Usuario from './usuarioM'; 
 
 
-const Visita = db.define('Usuario', {
-
+const Visita = databaseConnection.define('visita', {
+    idVisita: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
     confirmacionSolicitante: {
         type: DataTypes.BOOLEAN
     },
     estatus: {
         type: DataTypes.STRING
     },
-    razon: {
+    Razon: {
         type: DataTypes.STRING
     },
     latitudVisita: {
@@ -31,13 +35,13 @@ const Visita = db.define('Usuario', {
     fotoDomicilio: {
         type: DataTypes.STRING
     },
-    FotoIdentificacion: {
-        type: DataTypes.STRING
-    },
     solicitante_idSolicitante: {
         type: DataTypes.NUMBER
     },
     usuario_idUsuario: {
+        type: DataTypes.NUMBER
+    },
+    domicilio_idDomicilio: {
         type: DataTypes.NUMBER
     },
 },
@@ -49,7 +53,7 @@ const Visita = db.define('Usuario', {
 
     });
 Visita.belongsTo(Solicitante, { foreignKey: 'solicitante_idSolicitante' });
-Visita.belongsTo(Domicilio, { foreignKey: 'idDomicilio' });
+Visita.belongsTo(Domicilio, { foreignKey: 'domicilio_idDomicilio' });
 Visita.belongsTo(Usuario, { foreignKey: 'usuario_idUsuario' });
 
 export default Visita;

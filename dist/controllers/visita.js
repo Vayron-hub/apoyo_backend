@@ -33,7 +33,7 @@ const getVisitasPendientes = (req, res) => __awaiter(void 0, void 0, void 0, fun
             }
         });
         if (visitas.length === 0) {
-            res.status(400).json('Solicitante con id: ' + id + ' visitado');
+            res.status(400).json('El solicitante con id: ' + id + ' ya ha sido visitado o no existe');
         }
         else {
             res.json(visitas);

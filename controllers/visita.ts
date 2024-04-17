@@ -22,7 +22,7 @@ export const getVisitasPendientes = async (req: Request, res: Response) => {
     });
 
     if(visitas.length === 0){
-      res.status(400).json('Solicitante con id: ' +id+ ' visitado')
+      res.status(400).json('El solicitante con id: ' +id+ ' ya ha sido visitado o no existe')
     }else{
 
       res.json(visitas);
@@ -85,9 +85,10 @@ export const fotoSolicitante = async (req: Request, res: Response): Promise<void
       res.status(404).send('Solicitante no encontrado');
       return;
     }
-
+    
     // Get the photo filename from the solicitante
     let photoFilename: string | undefined;
+    
     if (solicitante.foto instanceof Uint8Array) {
       const buffer = Buffer.from(solicitante.foto); // Convertir Uint8Array a Buffer
       photoFilename = buffer.toString(); // Convertir Buffer a string
