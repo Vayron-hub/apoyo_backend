@@ -43,7 +43,8 @@ const login = (...args_1) => __awaiter(void 0, [...args_1], void 0, function* (r
         const usuarioRecortado = {
             idUsuario: usuario.idUsuario,
             nombre: usuario.nombre,
-            correo: usuario.correo
+            correo: usuario.correo,
+            puesto: usuario.puesto
         };
         res.json({
             usuarioRecortado,

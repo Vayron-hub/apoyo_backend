@@ -7,7 +7,7 @@ const { generarJWT } = require('../helpers/generar-jwt');
 
 
 
-export const login = async (req= request, res= response) => {
+export const login = async (req = request, res = response) => {
 
     const { correo, password } = req.body;
 
@@ -38,12 +38,13 @@ export const login = async (req= request, res= response) => {
             });
         }
 
-        const token = await generarJWT( usuario.idUsuario );
+        const token = await generarJWT(usuario.idUsuario);
 
         const usuarioRecortado = {
             idUsuario: usuario.idUsuario,
             nombre: usuario.nombre,
-            correo: usuario.correo
+            correo: usuario.correo,
+            puesto: usuario.puesto
         }
 
         res.json({
